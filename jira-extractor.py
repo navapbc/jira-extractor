@@ -47,20 +47,20 @@ def get_issues():
         username=jiraUser,
         password=jiraPassword)
     JQL = f'project = {jiraProject} ORDER BY issuekey'
-    #  AND status IN ("To Do", "In Progress") 
 
-
-    maxResults = 0
+    lastFound = 0
     total = 1
     issues = []
     data = {}
-    while (maxResults < total):
+    while (lastFound < total):
         try:
-            data = jira.jql(JQL)
+            data = jira.jql(JQL,start=lastFound)
+            lastFound = data["maxResults"]+data["startAt"]
+            total = data["total"]
         except:
             sys.exit("failed to paginate using jira api.")   
 
-        fields = list(itertools.chain(fields,data["issues"]))
+        issues = list(itertools.chain(issues,data["issues"]))
 
     return issues
 
@@ -69,9 +69,9 @@ def load_issues():
         data = json.load(json_file)
         return data
 
-def save_issues():
+def save_issues(data):
     with open('jira_query_result.json', 'w') as json_file:
-        data = json.dump(data, json_file)
+        json.dump(data, json_file)
 
 def write_csv(data):
     csvfile = open('issues.csv', 'w', newline='')
@@ -98,8 +98,8 @@ def write_csv(data):
             i["key"],
             ii["issuetype"]["name"],
             ii["priority"]["name"],
-            str(sorted([j["name"] for j in ii["components"]])),
-            str(sorted([j["name"] for j in ii["labels"]])),
+            '-'.join(sorted([j["name"] for j in ii["components"]])) if ii["components"] else None,
+            '-'.join(sorted([j for j in ii["labels"]])) if ii["labels"] else None,
             ii["status"]["name"],
             ii["resolution"]["name"] if ii["resolution"] else None,
             ii["reporter"]["displayName"],
@@ -116,7 +116,7 @@ def main():
 
     data = get_issues()
     write_csv(data)
-
+#    save_issues(data)
 
 if __name__ == "__main__":
     main()
