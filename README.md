@@ -7,7 +7,7 @@ This project is for extracting Jira project data. Might be useful if you need to
 ```
 python3 -m venv venv
 source venv/bin/activate
-python venv/bin/pip install atlassian-python-api
+python venv/bin/pip install atlassian-python-api python-dateutil
 ```
 
 ## Required environment variables
