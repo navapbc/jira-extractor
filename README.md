@@ -37,6 +37,11 @@ $Env:JIRA_PASSWORD=<pw>
 $Env:JIRA_PROJECT=<project key>
 ```
 
+## Disabling Windows Execution-Policy
+```
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
+```
+
 # atlassian-python-api
 
 [docs here](https://github.com/atlassian-api/atlassian-python-api)
